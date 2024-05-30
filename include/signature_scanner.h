@@ -12,18 +12,16 @@
 
 class SignatureScanner {
 public:
-    SignatureScanner();
-
-    // Returns the absolute address
-    template <int size> void *scan(Signature<size> sig) {
-        for (int offset = 0; offset < module.size() - size; offset++) {
+    // Returns the offset, or -1 if not found
+    template <int size> int scan(Signature<size> sig, std::span<uint8_t> span) {
+        for (int offset = 0; offset < span.size() - size; offset++) {
             bool found = true;
             int sig_byte = 0;
             while (sig_byte < size) {
                 if (!sig.bytes[sig_byte].known) {
                     sig_byte++;
                 }
-                else if (module[offset + sig_byte] != sig.bytes[sig_byte].byte) {
+                else if (span[offset + sig_byte] != sig.bytes[sig_byte].byte) {
                     found = false;
                     sig_byte = 0;
                     break;
@@ -33,15 +31,12 @@ public:
             }
 
             if (found) {
-                return this->base + offset;
+                return offset;
             }
         }
 
-        return nullptr;
+        return -1;
     }
-private:
-    std::span<uint8_t> module;
-    uint8_t *base;
 };
 
 

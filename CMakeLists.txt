@@ -3,5 +3,6 @@ project(signature_scanner)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_library(signature_scanner STATIC
-        signature_scanner.cpp)
+
+add_library(signature_scanner INTERFACE)
+target_include_directories(signature_scanner INTERFACE include)
