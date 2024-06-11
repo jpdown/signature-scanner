@@ -28,7 +28,7 @@ constexpr uint8_t char_to_nibble(char input) {
 }
 
 
-template <int sig_size> class Signature {
+template <std::size_t sig_size> class Signature {
 public:
     constexpr explicit Signature(std::string_view sig) {
         // TODO this needs major cleanup
@@ -81,6 +81,20 @@ constexpr int signature_length(std::string_view sig) {
     }
 
     return num_bytes;
+}
+
+template<std::size_t size> struct StringLiteral {
+    char str[size]{};
+    std::size_t len{};
+
+    constexpr StringLiteral(char const(&p)[size]) : len(size) {
+        std::copy(p, p + size, str);
+    }
+};
+
+template<StringLiteral str>
+consteval auto operator"" _sig() {
+    return Signature<str.len>(str.str);
 }
 
 #endif //CHUNI_SCALER_SIGNATURE_H
