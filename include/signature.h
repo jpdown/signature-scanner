@@ -6,6 +6,7 @@
 #define CHUNI_SCALER_SIGNATURE_H
 
 #include <array>
+#include <cstdint>
 
 struct Byte {
     bool known = false;
