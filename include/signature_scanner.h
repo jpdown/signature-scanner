@@ -15,7 +15,7 @@ public:
     SignatureScanner();
 
     // Returns the absolute address
-    template <int size> void *scan(Signature<size> sig) {
+    template <std::size_t size> void *scan(Signature<size> sig) {
         for (int offset = 0; offset < module.size() - size; offset++) {
             bool found = true;
             int sig_byte = 0;
