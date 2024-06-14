@@ -7,6 +7,9 @@
 
 #include <array>
 #include <cstdint>
+#include <span>
+
+#include <spdlog/spdlog.h>
 
 struct Byte {
     bool known = false;
@@ -63,10 +66,38 @@ public:
                 chars_processed++;
             }
 
+            this->bytes[bytes_processed] = curr_byte;
         }
 
         this->valid = true;
     }
+
+    long scan(std::span<uint8_t> span) const {
+        for (long offset = 0; offset < span.size() - sig_size; offset++) {
+            bool found = true;
+            int sig_byte = 0;
+            while (sig_byte < sig_size) {
+                if (!this->bytes[sig_byte].known) {
+                    sig_byte++;
+                }
+                else if (span[offset + sig_byte] != this->bytes[sig_byte].byte) {
+                    found = false;
+                    sig_byte = 0;
+                    break;
+                }
+
+                sig_byte++;
+            }
+
+            if (found) {
+                SPDLOG_INFO("candidate match found at offset {:x}", offset);
+//                return offset;
+            }
+        }
+
+        return -1;
+    }
+
     std::array<Byte, sig_size> bytes;
     bool valid = false;
 };
